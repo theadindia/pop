@@ -2,25 +2,213 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
-    <meta http-equiv="refresh" content="0; url=https://www.google.com/?redirect=https://thenewyork.vercel.app/">
+    <title>Redirecting to The New York</title>
     
-    <!-- Google Analytics -->
+    <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         gtag('config', 'G-XXXXXXXXXX');
-        
-        // Send tracking before redirect
-        gtag('event', 'instant_redirect', {
-            'event_category': 'navigation',
-            'event_label': 'https://thenewyork.vercel.app/'
-        });
     </script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        .timer {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px 0;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 20px 40px;
+            border-radius: 50px;
+        }
+        .url {
+            background: rgba(0,0,0,0.2);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-family: monospace;
+            font-size: 1.1em;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .manual-link {
+            color: white;
+            text-decoration: none;
+            border: 2px solid white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .manual-link:hover {
+            background: white;
+            color: #764ba2;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 1s linear;
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting...</p>
+    <div class="container">
+        <h1>🚀 Redirecting...</h1>
+        <p>You are being redirected to:</p>
+        <div class="url">https://thenewyork.vercel.app/</div>
+        
+        <div class="timer" id="timer">5</div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <a href="https://thenewyork.vercel.app/" class="manual-link" id="manualRedirect">
+            Click here if not redirected automatically
+        </a>
+    </div>
+
+    <script>
+        // Configuration
+        const TARGET_URL = "https://thenewyork.vercel.app/";
+        let countdown = 5;
+        let gaTrackingSent = false;
+
+        // Update timer display
+        const timerElement = document.getElementById('timer');
+        const progressElement = document.getElementById('progress');
+
+        // Function to send Google Analytics tracking
+        function sendGATracking() {
+            if (gaTrackingSent) return;
+            
+            try {
+                // Send page view (automatic with GA config)
+                
+                // Send custom redirect event
+                gtag('event', 'redirect_to_thenewyork', {
+                    'event_category': 'navigation',
+                    'event_label': TARGET_URL,
+                    'value': 1,
+                    'transport_type': 'beacon'
+                });
+
+                // Send user engagement event
+                gtag('event', 'user_redirected', {
+                    'event_category': 'engagement',
+                    'event_label': 'automatic_redirect',
+                    'non_interaction': true
+                });
+
+                console.log('✅ Google Analytics tracking sent');
+                gaTrackingSent = true;
+            } catch (error) {
+                console.log('⚠️ GA tracking failed:', error);
+            }
+        }
+
+        // Function to perform redirect
+        function performRedirect() {
+            sendGATracking();
+            
+            // Small delay to ensure GA tracking is sent
+            setTimeout(function() {
+                window.location.href = TARGET_URL;
+            }, 100);
+        }
+
+        // Timer countdown
+        const timer = setInterval(function() {
+            countdown--;
+            timerElement.textContent = countdown;
+            
+            // Update progress bar (5 seconds = 100%)
+            const progressPercentage = ((5 - countdown) / 5) * 100;
+            progressElement.style.width = progressPercentage + '%';
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                performRedirect();
+            }
+        }, 1000);
+
+        // Manual redirect link
+        document.getElementById('manualRedirect').addEventListener('click', function(e) {
+            e.preventDefault();
+            clearInterval(timer);
+            sendGATracking();
+            window.location.href = TARGET_URL;
+        });
+
+        // Track when page loads
+        window.addEventListener('load', function() {
+            // Track page view (already handled by GA)
+            
+            // Track that user landed on redirect page
+            gtag('event', 'redirect_page_loaded', {
+                'event_category': 'page_engagement',
+                'event_label': 'pre_redirect_page'
+            });
+        });
+
+        // Track if user leaves page
+        window.addEventListener('beforeunload', function() {
+            if (!gaTrackingSent) {
+                sendGATracking();
+            }
+        });
+
+        // Track visibility change (for mobile users)
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden' && !gaTrackingSent) {
+                sendGATracking();
+            }
+        });
+
+        // Set progress bar initial width
+        progressElement.style.width = '0%';
+    </script>
 </body>
 </html>
